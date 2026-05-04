@@ -1,0 +1,61 @@
+## Algorithm: Bank Account Management System
+
+**Goal:** To manage customer records (Create, Read, Update, Delete) using persistent binary file storage.
+
+### I. Main Process (The Controller)
+1.  **START**
+2.  Initialize the File Stream and an Account Object.
+3.  **REPEAT** the following:
+    * Display the **Main Menu** (1: New, 2: Deposit, 3: Withdraw, 4: Balance, 5: List All, 6: Close Account, 7: Exit).
+    * Accept **User Choice**.
+    * **SWITCH** (Choice):
+        * **Case 1:** Call `Write_To_File()`
+        * **Case 2:** Call `Update_Balance()` with "Deposit" flag.
+        * **Case 3:** Call `Update_Balance()` with "Withdraw" flag.
+        * **Case 4:** Call `Search_and_Display()`.
+        * **Case 5:** Call `Display_All()`.
+        * **Case 6:** Call `Delete_Record()`.
+        * **Case 7:** **EXIT** loop.
+4.  **END**
+
+---
+
+### II. Sub-Algorithm: Write_To_File (Create)
+1.  Open file `account.dat` in **Binary** and **Append** mode.
+2.  Input `Account_Number`, `Holder_Name`, `Account_Type`, and `Initial_Deposit`.
+3.  Store these into the object.
+4.  Write the entire object block to the file.
+5.  Close the file.
+
+---
+
+### III. Sub-Algorithm: Update_Balance (Deposit/Withdraw)
+1.  Input `Target_Account_Number` and `Transaction_Amount`.
+2.  Open file in **Read/Write (Binary)** mode.
+3.  Set `Found_Flag` = `False`.
+4.  **WHILE** (End of File is not reached):
+    * Read record into object.
+    * **IF** (object.AccountNumber == Target_Account_Number):
+        * **IF** (Transaction == "Withdraw" AND object.Balance < Transaction_Amount):
+            * Display "Insufficient Balance."
+        * **ELSE**:
+            * Update `object.Balance` (Add or Subtract).
+            * Calculate position: $Pos = (-1) \times \text{sizeof(object)}$.
+            * Seek current pointer back by $Pos$.
+            * Overwrite updated object to file.
+            * Set `Found_Flag` = `True`.
+5.  **IF** (`Found_Flag` == `False`): Display "Account Not Found."
+6.  Close the file.
+
+---
+
+### IV. Sub-Algorithm: Delete_Record (Filter)
+1.  Input `Target_Account_Number`.
+2.  Open `account.dat` for **Reading**.
+3.  Open `temp.dat` for **Writing**.
+4.  **WHILE** (Read record from `account.dat` is successful):
+    * **IF** (object.AccountNumber != Target_Account_Number):
+        * Write record into `temp.dat`.
+5.  Close both files.
+6.  Delete `account.dat`.
+7.  Rename `temp.dat` to `account.dat`.
